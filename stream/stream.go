@@ -217,8 +217,9 @@ func (s *Stream) log(args ...interface{}) {
 }
 
 type Message struct {
-	Type string `json:"type"`
-	Data struct {
+	Type          string `json:"type"`
+	DirectMessage bool   `json:"directMessage"`
+	Data          struct {
 		Space struct {
 			Key      string `json:"key"`
 			Name     string `json:"name"`
