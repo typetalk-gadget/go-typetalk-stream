@@ -1,16 +1,3 @@
-# go-typetalk-stream
-
-go-typetalk-stream is a GO library for using the Typetalk Streaming API.
-
-## Usage
-
-```go
-import "github.com/vvatanabe/go-typetalk-stream/stream"
-```
-
-## Example
-
-```go
 package main
 
 import (
@@ -59,8 +46,3 @@ func main() {
 	}
 	log.Println("completed graceful shutdown")
 }
-```
-
-## Bugs and Feedback
-
-For bugs, questions and discussions please use the Github Issues.
