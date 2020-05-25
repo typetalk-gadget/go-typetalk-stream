@@ -2,6 +2,7 @@ package stream
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"sync"
 	"sync/atomic"
@@ -89,7 +90,7 @@ func (s *Stream) Subscribe() error {
 	)
 
 	for {
-		msg, err := s.conn.Read()
+		data, err := s.conn.Read()
 		if err != nil {
 			select {
 			case <-s.getDoneChan():
@@ -114,14 +115,20 @@ func (s *Stream) Subscribe() error {
 		}
 		tempDelay = 0
 
-		go s.handleMessage(msg)
+		go s.handle(data)
 	}
 }
 
-func (s *Stream) handleMessage(msg *Message) {
-	s.trackMsg(msg, true)
-	defer s.trackMsg(msg, false)
-	s.Handler.Serve(msg)
+func (s *Stream) handle(data []byte) {
+	var msg Message
+	err := json.Unmarshal(data, &msg)
+	if err != nil {
+		s.log("invalid received message:", err)
+		return
+	}
+	s.trackMsg(&msg, true)
+	defer s.trackMsg(&msg, false)
+	s.Handler.Serve(&msg)
 }
 
 func (s *Stream) RegisterOnShutdown(f func()) {

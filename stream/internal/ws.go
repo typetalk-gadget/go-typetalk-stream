@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/vvatanabe/go-typetalk-stream/stream"
 )
 
 type AccessToken struct {
@@ -101,17 +100,7 @@ func (e NoReadError) Temporary() bool {
 	return true
 }
 
-type InvalidReceivedMessageError string
-
-func (e InvalidReceivedMessageError) Error() string {
-	return "invalid received message " + string(e)
-}
-
-func (e InvalidReceivedMessageError) Temporary() bool {
-	return false
-}
-
-func (c *WSConn) Read() (*stream.Message, error) {
+func (c *WSConn) Read() ([]byte, error) {
 
 	if err := c.reconnectIfExpiresSoon(); err != nil {
 		return nil, err
@@ -121,13 +110,7 @@ func (c *WSConn) Read() (*stream.Message, error) {
 	if err != nil {
 		return nil, NoReadError(err.Error())
 	}
-
-	var msg stream.Message
-	err = json.Unmarshal(data, &msg)
-	if err != nil {
-		return nil, InvalidReceivedMessageError(err.Error())
-	}
-	return &msg, nil
+	return data, nil
 }
 
 func (c *WSConn) Close() error {
