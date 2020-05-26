@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -106,7 +107,7 @@ func (s *Stream) Subscribe() error {
 				if max := 1 * time.Second; tempDelay > max {
 					tempDelay = max
 				}
-				s.log("Temporary read error: %v; reconnect in %v", err, tempDelay)
+				s.log(fmt.Sprintf("Temporary read error: %v; reconnect in %v", err, tempDelay))
 				time.Sleep(tempDelay)
 				_ = s.conn.Connect()
 				continue
@@ -218,44 +219,99 @@ func (s *Stream) log(args ...interface{}) {
 
 type Message struct {
 	Type string `json:"type"`
-	Data struct {
-		DirectMessage bool `json:"directMessage"`
-		Space         struct {
-			Key      string `json:"key"`
-			Name     string `json:"name"`
-			Enabled  bool   `json:"enabled"`
-			ImageURL string `json:"imageUrl"`
-		} `json:"space"`
-		Topic struct {
-			ID           int       `json:"id"`
-			Name         string    `json:"name"`
-			Suggestion   string    `json:"suggestion"`
-			LastPostedAt time.Time `json:"lastPostedAt"`
-			CreatedAt    time.Time `json:"createdAt"`
-			UpdatedAt    time.Time `json:"updatedAt"`
-		} `json:"topic"`
-		Post struct {
-			ID      int         `json:"id"`
-			TopicID int         `json:"topicId"`
-			ReplyTo interface{} `json:"replyTo"`
-			Message string      `json:"message"`
-			Account struct {
-				ID         int       `json:"id"`
-				Name       string    `json:"name"`
-				FullName   string    `json:"fullName"`
-				Suggestion string    `json:"suggestion"`
-				ImageURL   string    `json:"imageUrl"`
-				IsBot      bool      `json:"isBot"`
-				CreatedAt  time.Time `json:"createdAt"`
-				UpdatedAt  time.Time `json:"updatedAt"`
-			} `json:"account"`
-			Mention     interface{}   `json:"mention"`
-			Attachments []interface{} `json:"attachments"`
-			Likes       []interface{} `json:"likes"`
-			Talks       []interface{} `json:"talks"`
-			Links       []interface{} `json:"links"`
-			CreatedAt   time.Time     `json:"createdAt"`
-			UpdatedAt   time.Time     `json:"updatedAt"`
-		} `json:"post"`
-	} `json:"data"`
+	Data Data   `json:"data"`
+}
+
+type Data struct {
+	DirectMessage *DirectMessage `json:"directMessage"`
+	Space         *Space         `json:"space"`
+	Topic         *Topic         `json:"topic"`
+	Post          *Post          `json:"post"`
+}
+
+type DirectMessage struct {
+	Account Account `json:"account"`
+	Status  Status  `json:"status"`
+}
+
+type Account struct {
+	ID         int       `json:"id"`
+	Name       string    `json:"name"`
+	FullName   string    `json:"fullName"`
+	Suggestion string    `json:"suggestion"`
+	ImageURL   string    `json:"imageUrl"`
+	IsBot      bool      `json:"isBot"`
+	CreatedAt  time.Time `json:"createdAt"`
+	UpdatedAt  time.Time `json:"updatedAt"`
+}
+
+type Status struct {
+	Presence string      `json:"presence"`
+	Web      interface{} `json:"web"`
+	Mobile   interface{} `json:"mobile"`
+}
+
+type Space struct {
+	Key      string `json:"key"`
+	Name     string `json:"name"`
+	Enabled  bool   `json:"enabled"`
+	ImageURL string `json:"imageUrl"`
+}
+
+type Topic struct {
+	ID              int       `json:"id"`
+	Name            string    `json:"name"`
+	Description     string    `json:"description"`
+	Suggestion      string    `json:"suggestion"`
+	IsDirectMessage bool      `json:"isDirectMessage"`
+	LastPostedAt    time.Time `json:"lastPostedAt"`
+	CreatedAt       time.Time `json:"createdAt"`
+	UpdatedAt       time.Time `json:"updatedAt"`
+}
+
+type Post struct {
+	ID          int              `json:"id"`
+	TopicID     int              `json:"topicId"`
+	ReplyTo     int              `json:"replyTo"`
+	Message     string           `json:"message"`
+	Account     Account          `json:"account"`
+	Mention     *Mention         `json:"mention"`
+	Attachments []AttachmentFile `json:"attachments"`
+	Likes       []Like           `json:"likes"`
+	Talks       []Talk           `json:"talks"`
+	Links       []interface{}    `json:"links"`
+	CreatedAt   time.Time        `json:"createdAt"`
+	UpdatedAt   time.Time        `json:"updatedAt"`
+}
+
+type Mention struct {
+	ID     int       `json:"id"`
+	ReadAt time.Time `json:"readAt"`
+	Post   Post      `json:"post"`
+}
+
+type AttachmentFile struct {
+	ContentType string `json:"contentType"`
+	FileKey     string `json:"fileKey"`
+	FileName    string `json:"fileName"`
+	FileSize    int    `json:"fileSize"`
+}
+
+type Like struct {
+	ID        int       `json:"id"`
+	PostID    int       `json:"postId"`
+	TopicID   int       `json:"topicId"`
+	Comment   string    `json:"comment"`
+	Account   Account   `json:"account"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+type Talk struct {
+	ID         int         `json:"id"`
+	TopicID    int         `json:"topicId"`
+	Name       string      `json:"name"`
+	Suggestion string      `json:"suggestion"`
+	CreatedAt  time.Time   `json:"createdAt"`
+	UpdatedAt  time.Time   `json:"updatedAt"`
+	Backlog    interface{} `json:"backlog"`
 }
