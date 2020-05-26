@@ -245,6 +245,7 @@ type Message struct {
 				FullName   string    `json:"fullName"`
 				Suggestion string    `json:"suggestion"`
 				ImageURL   string    `json:"imageUrl"`
+				IsBot      bool      `json:"isBot"`
 				CreatedAt  time.Time `json:"createdAt"`
 				UpdatedAt  time.Time `json:"updatedAt"`
 			} `json:"account"`
