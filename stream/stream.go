@@ -9,6 +9,8 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/vvatanabe/go-typetalk-stream/stream/store"
+
 	"github.com/vvatanabe/go-typetalk-stream/stream/internal"
 )
 
@@ -31,6 +33,7 @@ const (
 type Stream struct {
 	ClientID     string
 	ClientSecret string
+	TokenStore   store.TokenStore
 	Handler      Handler
 	PingInterval time.Duration
 	LoggerFunc   LoggerFunc
@@ -58,7 +61,15 @@ func (s *Stream) Subscribe() error {
 	}
 	atomic.StoreInt32(&s.started, 1)
 
-	s.conn.SetCredentials(s.ClientID, s.ClientSecret)
+	if s.TokenStore != nil {
+		s.conn.SetTokenStore(s.TokenStore)
+	} else {
+		s.conn.SetTokenStore(&store.MemoryTokenStore{
+			ClientID:     s.ClientID,
+			ClientSecret: s.ClientSecret,
+			Scope:        "topic.read",
+		})
+	}
 
 	err := s.conn.Connect()
 	if err != nil {
@@ -80,7 +91,7 @@ func (s *Stream) Subscribe() error {
 			case <-t.C:
 				err := s.conn.Ping()
 				if err != nil {
-					s.log("ping: ", err)
+					s.log("ping:", err)
 				}
 			}
 		}
@@ -98,7 +109,7 @@ func (s *Stream) Subscribe() error {
 				return ErrStreamClosed
 			default:
 			}
-			if ne, ok := err.(internal.StreamError); ok && ne.Temporary() {
+			if ne, ok := err.(internal.WSConnError); ok && ne.Temporary() {
 				if tempDelay == 0 {
 					tempDelay = 5 * time.Millisecond
 				} else {
@@ -107,7 +118,7 @@ func (s *Stream) Subscribe() error {
 				if max := 1 * time.Second; tempDelay > max {
 					tempDelay = max
 				}
-				s.log(fmt.Sprintf("Temporary read error: %v; reconnect in %v", err, tempDelay))
+				s.log(fmt.Sprintf("temporary read error: %v; reconnect in %v", err, tempDelay))
 				time.Sleep(tempDelay)
 				_ = s.conn.Connect()
 				continue
@@ -124,7 +135,7 @@ func (s *Stream) handle(data []byte) {
 	var msg Message
 	err := json.Unmarshal(data, &msg)
 	if err != nil {
-		s.log("invalid received message:", err)
+		s.log("no unmarshal message:", err)
 		return
 	}
 	s.trackMsg(&msg, true)
@@ -150,7 +161,7 @@ func (s *Stream) Shutdown(ctx context.Context) error {
 
 	err := s.conn.Close()
 	if err != nil {
-		s.log("close:", err)
+		s.log("conn close:", err)
 	}
 
 	finished := make(chan struct{}, 1)
@@ -212,7 +223,7 @@ func (s *Stream) closeDoneChanLocked() {
 
 func (s *Stream) log(args ...interface{}) {
 	if s.LoggerFunc != nil {
-		args = append([]interface{}{"message: "}, args...)
+		args = append([]interface{}{"stream: "}, args...)
 		s.LoggerFunc(args...)
 	}
 }
