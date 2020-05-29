@@ -1,4 +1,4 @@
-module github.com/vvatanabe/go-typetalk-stream
+module github.com/typetalk-gadget/go-typetalk-stream
 
 go 1.14
 

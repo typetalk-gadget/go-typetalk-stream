@@ -1,6 +1,6 @@
 package tool
 
-import "github.com/vvatanabe/go-typetalk-stream/stream"
+import "github.com/typetalk-gadget/go-typetalk-stream/stream"
 
 type Constructor func(stream.HandlerFunc) stream.HandlerFunc
 

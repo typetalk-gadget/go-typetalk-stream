@@ -8,7 +8,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/vvatanabe/go-typetalk-stream/stream"
+	"github.com/typetalk-gadget/go-typetalk-stream/stream"
 )
 
 func main() {

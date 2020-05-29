@@ -9,7 +9,7 @@ Go 1.14+
 ## Usage
 
 ```go
-import "github.com/vvatanabe/go-typetalk-stream/stream"
+import "github.com/typetalk-gadget/go-typetalk-stream/stream"
 ```
 
 ## Example
@@ -25,7 +25,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/vvatanabe/go-typetalk-stream/stream"
+	"github.com/typetalk-gadget/go-typetalk-stream/stream"
 )
 
 func main() {

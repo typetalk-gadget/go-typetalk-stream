@@ -9,7 +9,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/vvatanabe/go-typetalk-stream/stream/internal"
+	"github.com/typetalk-gadget/go-typetalk-stream/stream/internal"
 	"github.com/vvatanabe/go-typetalk-token-source/source"
 	"golang.org/x/oauth2"
 )
