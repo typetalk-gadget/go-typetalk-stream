@@ -6,22 +6,22 @@ import (
 	"sync"
 
 	"github.com/gorilla/websocket"
-	"github.com/vvatanabe/go-typetalk-stream/stream/store"
+	"golang.org/x/oauth2"
 )
 
 type WSConn struct {
-	store store.TokenStore
-	conn  *websocket.Conn
-	mu    sync.Mutex
+	source oauth2.TokenSource
+	conn   *websocket.Conn
+	mu     sync.Mutex
 }
 
-func (c *WSConn) SetTokenStore(s store.TokenStore) {
-	c.store = s
+func (c *WSConn) SetTokenSource(s oauth2.TokenSource) {
+	c.source = s
 }
 
 func (c *WSConn) Connect() error {
 
-	token, err := c.store.GetAccessToken()
+	token, err := c.source.Token()
 	if err != nil {
 		return err
 	}
@@ -32,7 +32,7 @@ func (c *WSConn) Connect() error {
 		Path:   "/api/v1/streaming",
 	}
 	header := make(http.Header)
-	header.Set("Authorization", "Bearer "+token)
+	header.Set("Authorization", "Bearer "+token.AccessToken)
 	conn, _, err := websocket.DefaultDialer.Dial(u.String(), header)
 	if err != nil {
 		return NoDialError(err.Error())

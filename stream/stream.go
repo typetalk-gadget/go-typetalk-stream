@@ -9,9 +9,9 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/vvatanabe/go-typetalk-stream/stream/store"
-
 	"github.com/vvatanabe/go-typetalk-stream/stream/internal"
+	"github.com/vvatanabe/go-typetalk-token-source/source"
+	"golang.org/x/oauth2"
 )
 
 type LoggerFunc func(...interface{})
@@ -33,7 +33,7 @@ const (
 type Stream struct {
 	ClientID     string
 	ClientSecret string
-	TokenStore   store.TokenStore
+	TokenSource  oauth2.TokenSource
 	Handler      Handler
 	PingInterval time.Duration
 	LoggerFunc   LoggerFunc
@@ -61,10 +61,10 @@ func (s *Stream) Subscribe() error {
 	}
 	atomic.StoreInt32(&s.started, 1)
 
-	if s.TokenStore != nil {
-		s.conn.SetTokenStore(s.TokenStore)
+	if s.TokenSource != nil {
+		s.conn.SetTokenSource(s.TokenSource)
 	} else {
-		s.conn.SetTokenStore(&store.MemoryTokenStore{
+		s.conn.SetTokenSource(&source.TokenSource{
 			ClientID:     s.ClientID,
 			ClientSecret: s.ClientSecret,
 			Scope:        "topic.read",
@@ -111,11 +111,13 @@ func (s *Stream) Subscribe() error {
 			}
 			if ne, ok := err.(internal.WSConnError); ok && ne.Temporary() {
 				if tempDelay == 0 {
-					tempDelay = 5 * time.Millisecond
+					// FIXME
+					//tempDelay = 5 * time.Millisecond
+					tempDelay = 1 * time.Second
 				} else {
 					tempDelay *= 2
 				}
-				if max := 1 * time.Second; tempDelay > max {
+				if max := 10 * time.Second; tempDelay > max {
 					tempDelay = max
 				}
 				s.log(fmt.Sprintf("temporary read error: %v; reconnect in %v", err, tempDelay))
