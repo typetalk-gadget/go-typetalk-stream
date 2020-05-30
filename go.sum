@@ -3,10 +3,10 @@ github.com/golang/protobuf v1.2.0 h1:P3YflyNX/ehuJFLhxviNdFxQPkGK5cDcApsge1SqnvM
 github.com/golang/protobuf v1.2.0/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
 github.com/gorilla/websocket v1.4.2 h1:+/TMaTYc4QFitKJxsQ7Yye35DkWvkdLcvGKqM+x0Ufc=
 github.com/gorilla/websocket v1.4.2/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
+github.com/typetalk-gadget/go-typetalk-token-source v0.0.1 h1:ecn+Z+nVmimfaudoEsJMmCnBUspGpPkrptHH2cqT62E=
+github.com/typetalk-gadget/go-typetalk-token-source v0.0.1/go.mod h1:QKb7IfemvFWEDDVBDYexnt7FmGADd+zenlT749A5mhs=
 github.com/vvatanabe/expiremap v0.9.1 h1:9RhEbiRC7B43zboFhMhDHKjYGh9/ue55AIulnMfEUx8=
 github.com/vvatanabe/expiremap v0.9.1/go.mod h1:R8DKVXal/xH3U2wfcMyNNEUAT417SREMZevthnVi6qk=
-github.com/vvatanabe/go-typetalk-token-source v0.1.0 h1:PmJQTW0TwHLe/15J3duS6ABwFBn2hDTc0+8w9cBywP4=
-github.com/vvatanabe/go-typetalk-token-source v0.1.0/go.mod h1:d7sEqbxk9v8s94H3WUK7/cf3IooXXDaNKUF/GR87gik=
 golang.org/x/net v0.0.0-20180724234803-3673e40ba225/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
 golang.org/x/net v0.0.0-20190108225652-1e06a53dbb7e h1:bRhVy7zSSasaqNksaRZiA5EEI+Ei4I1nO5Jh72wfHlg=
 golang.org/x/net v0.0.0-20190108225652-1e06a53dbb7e/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=

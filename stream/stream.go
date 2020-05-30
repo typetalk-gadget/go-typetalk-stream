@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/typetalk-gadget/go-typetalk-stream/stream/internal"
-	"github.com/vvatanabe/go-typetalk-token-source/source"
+	"github.com/typetalk-gadget/go-typetalk-token-source/source"
 	"golang.org/x/oauth2"
 )
 
